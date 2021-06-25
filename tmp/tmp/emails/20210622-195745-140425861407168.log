@@ -1,0 +1,11 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Account verify
+From: nargo@gb.local
+To: testeml@gb.ru
+Date: Tue, 22 Jun 2021 14:57:45 -0000
+Message-ID: <162437386532.13357.10256764922570566774@1.0.0.127.in-addr.arpa>
+
+Your link for account activation: http://localhost:8080/auth/verify/testeml@gb.ru/837dfadd1ca8d930127d7142285f02d09951a0c2/
+-------------------------------------------------------------------------------

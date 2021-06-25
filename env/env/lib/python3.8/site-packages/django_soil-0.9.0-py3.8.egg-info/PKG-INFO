@@ -1,0 +1,11 @@
+Metadata-Version: 1.1
+Name: django-soil
+Version: 0.9.0
+Summary: A simple django library to help you schedule long running tasks for retrieval later when they're done using celery
+Home-page: https://github.com/dimagi/django-soil
+Author: Dimagi
+Author-email: information@dimagi.com
+License: UNKNOWN
+Download-URL: https://github.com/dimagi/django-soil/downloads
+Description: UNKNOWN
+Platform: UNKNOWN
