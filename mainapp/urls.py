@@ -3,7 +3,7 @@
 import mainapp.views as mainapp
 from django.urls import re_path
 
-app_name="mainapp"
+app_name = "mainapp"
 
 urlpatterns = [
     re_path(r'^$', mainapp.products, name='index'),
@@ -13,5 +13,3 @@ urlpatterns = [
     re_path(r'^category/(?P<pk>\d+)/page/(?P<page>\d+)/$', mainapp.products, name='page'),
 
 ]
-
-    

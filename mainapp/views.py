@@ -9,7 +9,7 @@ JSON_PATH = 'mainapp/json'
 
 
 def load_from_json(file_name):
-    with open(os.path.join(JSON_PATH, file_name + '.json'), 'r') as infile:
+    with open(os.path.join((JSON_PATH, file_name + '.json'), encoding='utf-8'), 'r') as infile:
         return json.load(infile)
 
 
@@ -101,7 +101,7 @@ def product(request, pk):
 def contact(request):
     title = 'о нас'
 
-    locations = load_from_json('contact__locations').decode('utf-8')
+    locations = load_from_json('contact__locations')
 
     content = {
         'title': title,
