@@ -1,0 +1,65 @@
+{% extends 'ordersapp/base.html' %}
+{% load static %}
+
+
+{% block content %}
+   <div class="h2 text-center head">
+       Ваши заказы,
+       {% if user.first_name %}
+           {{ user.first_name|title}}
+       {% else %}
+           Пользователь
+       {% endif %}
+   </div>
+   <table class="table orders_list">
+       <thead>
+         <tr>
+           <th>ID</th>
+           <th>Создан</th>
+           <th>Обновлен</th>
+           <th>Статус</th>
+         </tr>
+       </thead>
+       <tbody>
+           {% for item in object_list %}
+               {% if item.is_active %}
+               <tr>
+                   <td class="td1 orders_list">{{ item.pk }}</td>
+                   <td>{{ item.created|date:"d.m.Y H:i:s" }}</td>
+                   <td>{{ item.updated|date:"d.m.Y H:i:s" }}</td>
+                   <td>{{ item.get_status_display }}</td>
+                   <td>
+                       <a class="btn btn-link" href="{% url 'order:read' item.pk %}">
+                           посмотреть
+                       </a>
+                   </td>
+                   <td>
+                       {% if item.status == 'FM' %}
+                         <a class="btn btn-link" href="{% url 'order:update' item.pk %}">
+                           редактировать
+                         </a>
+                       {% endif %}
+                   </td>
+                   <td>
+                       {% if item.status == 'FM' %}
+                         <a class="btn btn-link" href="{% url 'order:delete' item.pk %}">
+                             удалить
+                         </a>
+                       {% endif %}
+                   </td>
+               </tr>
+               {% endif %}
+           {% endfor %}
+       </tbody>
+   </table>
+   <button class="btn btn-default btn-round">
+       <a href="{% url 'main' %}">
+           на главную
+       </a>
+   </button>
+   <button class="btn btn-default btn-round">
+       <a href="{% url 'order:create' %}">
+           новый
+       </a>
+   </button>
+{% endblock %}
