@@ -55,10 +55,11 @@ def register(request):
         if register_form.is_valid():
             user = register_form.save()
             if send_verify_link(user):
-                logging.debug('sent succesful')
+                logging.debug('sent successful')
+                return HttpResponseRedirect(reverse('auth:login'))
             else:
                 logging.debug('sent failed')
-            return HttpResponseRedirect(reverse('auth:login'))
+                return HttpResponseRedirect(reverse('auth:login'))
     else:
         register_form = ShopUserRegisterForm()
 
@@ -91,8 +92,7 @@ def send_verify_link(user):
     message = f'Для подтверждения уч. записи {user.username} \
               на портале {settings.DOMAIN_NAME} перейдите по ссылке: \
               \n{settings.DOMAIN_NAME}{verify_link}'
-    # subject = 'Account verify'
-    # message = f'Your link for account activation: {settings.DOMAIN_NAME}{verify_link}'
+
     return send_mail(title, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
 
 
@@ -100,7 +100,7 @@ def verify(request, email, key):
     try:
         user = ShopUser.objects.filter(email=email).first()
         if user and user.activation_key == key and not user.is_activation_key_expired():
-            print(f'user {user} is activvated')
+            print(f'user {user} is activated')
             user.is_active = True
             user.activation_key = ''
             user.activation_key_created = None

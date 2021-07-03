@@ -70,4 +70,3 @@ def basket_edit(request, pk, quantity):
         result = render_to_string('basketapp/includes/inc_basket_list.html', content)
         
         return JsonResponse({'result': result})
-        

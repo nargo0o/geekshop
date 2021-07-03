@@ -3,7 +3,7 @@
 import basketapp.views as basketapp
 from django.urls import re_path
 
-app_name="basketapp"
+app_name = "basketapp"
 
 urlpatterns = [
     re_path(r'^$', basketapp.basket, name='view'),
@@ -12,5 +12,3 @@ urlpatterns = [
 
     re_path(r'^edit/(?P<pk>\d+)/(?P<quantity>\d+)/$', basketapp.basket_edit, name='edit'),
 ]
-
-    

@@ -8,10 +8,10 @@ from django.utils import timezone
 
 
 def save_user_profile(backend, user, response, *args, **kwargs):
-    if backend != 'vk.oauth2':
+    if backend.name != 'vk.oauth2':
         return
 
-    api_url = f"https://api.vk.com/method/users.get?fields=bdate, sex, about&access_token={response['access_token']}"
+    api_url = f"https://api.vk.com/method/users.get?fields=bdate,sex,about,photo_max_orig&v=5.131&access_token={response['access_token']}"
     vk_response = requests.get(api_url)
 
     if vk_response.status_code != 200:
@@ -36,4 +36,11 @@ def save_user_profile(backend, user, response, *args, **kwargs):
             raise AuthForbidden('social_core.backends.vk.VKOAuth2')
         user.age = age
 
-        user.save()
+    if vk_data['photo_max_orig']:
+        photo_link = vk_data['photo_max_orig']
+        photo_response = requests.get(photo_link)
+        with open(f'media/users_avatars/{user.pk}.jpg', 'wb') as photo_file:
+            photo_file.write(photo_response.content)
+        user.avatar = f'users_avatars/{user.pk}.jpg'
+
+    user.save()

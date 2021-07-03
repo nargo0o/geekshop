@@ -17,9 +17,20 @@
     </li>
     {% if user.is_authenticated %}
         <li>
-            <a href="{% url 'auth:edit' %}">
+            <div class="dropdown">
+              <a class="dropdown-toggle" href="" data-toggle="dropdown">
                 {{ user.first_name|default:'Пользователь' }}
+                <span class="caret"></span>
             </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="{% url 'auth:edit' %}">профиль</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'order:list' %}">заказы</a>
+                    </li>
+                </ul>
+            </div>
         </li>
     {% endif %}
     {% if user.is_superuser %}
