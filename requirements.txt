@@ -22,6 +22,7 @@ django-devserver==0.8.0
 django-redis==4.2.0
 django-soil==0.9.0
 et-xmlfile==1.1.0
+form==0.0.1
 http-parser==0.9.0
 idna==2.10
 Jinja2==3.0.1
