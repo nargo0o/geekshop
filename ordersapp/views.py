@@ -1,4 +1,6 @@
 from django.db import transaction
+from django.db.models.signals import pre_save, pre_delete
+from django.dispatch import receiver
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -42,6 +44,7 @@ class OrderCreate(CreateView):
                     form.initial['quantity'] = basket_items[num].quantity
             else:
                 formset = OrderFormSet()
+
         data['orderitems'] = formset
         return data
 
@@ -85,7 +88,7 @@ class OrderUpdate(UpdateView):
         orderitems = context['orderitems']
 
         with transaction.atomic():
-            form.instance.user = self.request.user
+            # form.instance.user = self.request.user
             self.object = form.save()
             if orderitems.is_valid():
                 orderitems.instance = self.object
@@ -119,3 +122,22 @@ def forming_complete(request, pk):
     order.save()
 
     return HttpResponseRedirect(reverse('order:list'))
+
+
+@receiver(pre_save, sender=OrderItem)
+@receiver(pre_save, sender=Basket)
+def product_quantity_update_save(instance, sender, **kwargs):
+    if instance.pk:
+        """If user change quantity in order or basket"""
+        instance.product.quantity -= instance.quantity - sender.get_item(instance.pk).quantity
+    else:
+        """If user create order or basket"""
+        instance.product.quantity -= instance.quantity
+    instance.product.save()
+
+
+@receiver(pre_delete, sender=OrderItem)
+@receiver(pre_delete, sender=Basket)
+def product_quantity_update_delete(instance, **kwargs):
+    instance.product.quantity += instance.quantity
+    instance.product.save()
