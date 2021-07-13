@@ -29,6 +29,7 @@ class OrderItemsCreate(CreateView):
     def get_context_data(self, **kwargs):
         data = super(OrderItemsCreate, self).get_context_data(**kwargs)
         OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemEditForm, extra=1)
+
         if self.request.POST:
             formset = OrderFormSet(self.request.POST)
         else:
@@ -43,10 +44,10 @@ class OrderItemsCreate(CreateView):
                 for num, form in enumerate(formset.forms):
                     form.initial['product'] = basket_items[num].product
                     form.initial['quantity'] = basket_items[num].quantity
-                    form.initial['price'] = basket_items[num].products.price
-                for basket_item in basket_items:
-                    basket_item.delete()
-                # basket_items.delete()
+                    form.initial['price'] = basket_items[num].product.price
+                # for basket_item in basket_items:
+                #     basket_item.delete()
+                basket_items.delete()
             else:
                 formset = OrderFormSet()
 
@@ -140,7 +141,7 @@ def product_quantity_update_save(sender, update_fields, instance, **kwargs):
         instance.product.quantity -= instance.quantity - instance.get_item(instance.pk).quantity
     else:
         instance.product.quantity -= instance.quantity
-        instance.product.save()
+    instance.product.save()
 
 
 @receiver(pre_delete, sender=Basket)

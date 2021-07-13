@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+
 from mainapp.models import Product
 
 
@@ -20,27 +22,25 @@ class Basket(models.Model):
     quantity = models.PositiveIntegerField(verbose_name='количество', default=0)
     add_datetime = models.DateTimeField(verbose_name='время добавления', auto_now_add=True)
 
+    @property
     def _get_product_cost(self):
         "return cost of all products this type"
         return self.product.price * self.quantity
 
-    product_cost = property(_get_product_cost)
-
+    @property
     def get_total_quantity(self):
         "return total quantity for user"
         _items = Basket.objects.filter(user=self.user)
         _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
         return _totalquantity
 
-    # total_quantity = property(_get_total_quantity)
-
+    @property
     def get_total_cost(self):
         "return total cost for user"
         _items = Basket.objects.filter(user=self.user)
         _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
         return _totalcost
 
-    # total_cost = property(_get_total_cost)
 
     @staticmethod
     def get_items(user):
@@ -60,7 +60,7 @@ class Basket(models.Model):
 
     @staticmethod
     def get_item(pk):
-        return Basket.objects.get(pk=pk)
+        return get_object_or_404(Basket, pk=pk)
 
     # def delete(self, *args, **kwargs):
     #     self.product.quantity += self.quantity
@@ -72,7 +72,7 @@ class Basket(models.Model):
     #         self.product.quantity -= self.quantity - self.__class__.objects.get(pk=self.pk).quantity
     #     else:
     #         self.product.quantity -= self.quantity
-    #      self.product.save()
+    #     self.product.save()
     #     super().save(*args, **kwargs)
         
         
