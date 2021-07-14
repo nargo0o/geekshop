@@ -1,7 +1,6 @@
 import datetime, random, os, json
 from django.shortcuts import render, get_object_or_404
 from mainapp.models import ProductCategory, Product
-from basketapp.models import Basket
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -40,7 +39,6 @@ def main(request):
 def products(request, pk=None, page=1):
     title = 'продукты'
     links_menu = ProductCategory.objects.filter(is_active=True)
-    # basket = get_basket(request.user)
 
     if pk:
         if pk == '0':

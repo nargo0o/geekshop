@@ -1,14 +1,16 @@
 import ordersapp.views as ordersapp
-from django.urls import path
+from django.urls import re_path
 
-app_name = "ordersapp"
+app_name="ordersapp"
 
 urlpatterns = [
-    path('', ordersapp.OrderList.as_view(), name='list'),
-    path('create/', ordersapp.OrderCreate.as_view(), name='create'),
-    path('update/<pk>/', ordersapp.OrderUpdate.as_view(), name='update'),
-    path('delete/<pk>/', ordersapp.OrderDelete.as_view(), name='delete'),
-    path('read/<pk>/', ordersapp.OrderRead.as_view(), name='read'),
-    path('forming/complete/<pk>/', ordersapp.forming_complete, name='forming_complete'),
+    re_path(r'^$', ordersapp.OrderList.as_view(), name='orders_list'),
+    re_path(r'^forming/complete/(?P<pk>\d+)/$', ordersapp.order_forming_complete, name='order_forming_complete'),
 
+    re_path(r'^create/$', ordersapp.OrderItemsCreate.as_view(), name='order_create'),
+    re_path(r'^read/(?P<pk>\d+)/$', ordersapp.OrderRead.as_view(), name='order_read'),
+    re_path(r'^update/(?P<pk>\d+)/$', ordersapp.OrderItemsUpdate.as_view(), name='order_update'),
+    re_path(r'^delete/(?P<pk>\d+)/$', ordersapp.OrderDelete.as_view(), name='order_delete'),
+
+    re_path(r'^product/(?P<pk>\d+)/price/$', ordersapp.get_product_price),
 ]

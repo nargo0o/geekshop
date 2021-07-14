@@ -1,8 +1,6 @@
-from django.conf import settings
 from django.db import models
-from django.shortcuts import get_object_or_404
 
-from basketapp.models import Basket
+from django.conf import settings
 from mainapp.models import Product
 
 
@@ -11,28 +9,25 @@ class Order(models.Model):
     SENT_TO_PROCEED = 'STP'
     PROCEEDED = 'PRD'
     PAID = 'PD'
-    READY = 'RD'
+    READY = 'RDY'
     CANCEL = 'CNC'
-    DELIVERED = 'DVD'
 
-    STATUSES = (
-        (FORMING, 'Формируется'),
-        (SENT_TO_PROCEED, 'Отправлен в обработку'),
-        (PROCEEDED, 'Обработан'),
-        (PAID, 'Оплачен'),
-        (READY, 'Готов к выдаче'),
-        (CANCEL, 'Отменен'),
-        (DELIVERED, 'Выдан'),
+    ORDER_STATUS_CHOICES = (
+        (FORMING, 'формируется'),
+        (SENT_TO_PROCEED, 'отправлен в обработку'),
+        (PAID, 'оплачен'),
+        (PROCEEDED, 'обрабатывается'),
+        (READY, 'готов к выдаче'),
+        (CANCEL, 'отменен'),
     )
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    created = models.DateField(auto_now_add=True, verbose_name='создан')
-    updated = models.DateField(auto_now=True, verbose_name='обновлен')
-    is_active = models.BooleanField(default=True)
-    status = models.CharField(choices=STATUSES, default=FORMING, max_length=3, verbose_name='статус')
+    created = models.DateTimeField(verbose_name='создан', auto_now_add=True)
+    updated = models.DateTimeField(verbose_name='обновлен', auto_now=True)
+    status = models.CharField(verbose_name='статус', max_length=3, choices=ORDER_STATUS_CHOICES, default=FORMING)
+    is_active = models.BooleanField(verbose_name='активен', default=True)
 
     class Meta:
-        ordering = ('-created',)  # сортировка по умолчанию от более новых к старым заказам
+        ordering = ('-created',)
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
 
@@ -40,24 +35,16 @@ class Order(models.Model):
         return 'Текущий заказ: {}'.format(self.id)
 
     def get_total_quantity(self):
-        "return total quantity for user"
         items = self.orderitems.select_related()
-        totalquantity = sum(list(map(lambda x: x.quantity, items)))
-        return totalquantity
+        return sum(list(map(lambda x: x.quantity, items)))
 
     def get_product_type_quantity(self):
         items = self.orderitems.select_related()
         return len(items)
 
     def get_total_cost(self):
-        "return total sum for user"
         items = self.orderitems.select_related()
-        totalcost = sum(list(map(lambda x: x.get_product_cost(), items)))
-        return totalcost
-
-    def get_product_type_quantity(self):
-        items = self.orderitems.select_related()
-        return len(items)
+        return sum(list(map(lambda x: x.quantity * x.product.price, items)))
 
     # переопределяем метод, удаляющий объект
     def delete(self):
@@ -70,17 +57,13 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='orderitems')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField(default=0, verbose_name='количество')
-    add_datetime = models.DateField(verbose_name='время добавления', auto_now_add=True)
+    order = models.ForeignKey(Order, related_name="orderitems", on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name='продукт', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(verbose_name='количество', default=0)
 
     def get_product_cost(self):
-        "return cost of all products this type"
         return self.product.price * self.quantity
 
     @staticmethod
     def get_item(pk):
-        return get_object_or_404(OrderItem, pk=pk)
-
-
+        return OrderItem.objects.filter(pk=pk).first()
